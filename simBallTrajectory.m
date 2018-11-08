@@ -17,7 +17,7 @@ rifle = 0;   % in rpm, about global X
 
 vx = (v0*cos(elev)*cos(azim));
 vy = v0*sin(elev);
-vz = (v0*cos(elev)*sin(azim));
+vz = -(v0*cos(elev)*sin(azim));
 
 % Angle tings:
 omega = sqrt(wx*wx + wy*wy + wz*wz);
