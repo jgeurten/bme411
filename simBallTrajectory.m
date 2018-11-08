@@ -1,0 +1,56 @@
+function [x, final,t] = simBallTrajectory(launch_params)
+
+global tx ty tz
+
+% Initial launch conditions
+v0 = launch_params(1);      % initial speed [m/s] 
+
+elev = launch_params(2);    % angle of elevation, theta in diagram
+azim = launch_params(3);    % angle of azimuth, alpha in diagram
+
+wx = 0;                     % rifle spin [rad/s] - not physically possible
+wz = launch_params(4);      % back spin [rad/s]
+wy = launch_params(5);      % side spin [rad/s]
+height = launch_params(6);  % height of release above ground [m]
+
+rifle = 0;   % in rpm, about global X
+
+vx = (v0*cos(elev)*cos(azim));
+vy = v0*sin(elev);
+vz = (v0*cos(elev)*sin(azim));
+
+% Angle tings:
+omega = sqrt(wx*wx + wy*wy + wz*wz);
+tx = wx/omega;
+ty = wy/omega;
+tz = wz/omega;
+
+t0 = 0;
+tf = 10;
+%x(1)=Vx, x(2)=Vy, x(3)=Vz, x(4)=X, x(5)=Y, x(6)=Z, x(7)=omega
+x0 = [vx, vy, vz, 0, height, 0, omega]';   % initial launch conditions
+
+options = odeset('RelTol',1e-5,'AbsTol',1e-6);
+[t,x] = ode45('traj_eqns', [t0,tf], x0, options);
+
+% find time when ball returns to ground.
+final_height= 0;  % final ground height, in meters
+final = -1;
+[rows,cols] = size(x);
+for i=2:rows,
+  if x(i,5) < final_height  % ball has impacted ground (check y_dot < 0)
+    if final < 0            % then we are at first instant of impact.
+        final = i;
+        % use linear interpolation to get final values:
+        t(i)= t(i-1) + (t(i)-t(i-1))*(final_height-x(i-1,5))/(x(i,5)-x(i-1,5));
+        x(i,1) = x(i-1,1) + (x(i,1)-x(i-1,1))*(final_height-x(i-1,5))/(x(i,5)-x(i-1,5));
+        x(i,2) = x(i-1,2) + (x(i,2)-x(i-1,2))*(final_height-x(i-1,5))/(x(i,5)-x(i-1,5));
+        x(i,3) = x(i-1,3) + (x(i,3)-x(i-1,3))*(final_height-x(i-1,5))/(x(i,5)-x(i-1,5));
+        x(i,4) = x(i-1,4) + (x(i,4)-x(i-1,4))*(final_height-x(i-1,5))/(x(i,5)-x(i-1,5));
+        x(i,6) = x(i-1,6) + (x(i,6)-x(i-1,6))*(final_height-x(i-1,5))/(x(i,5)-x(i-1,5));
+        x(i,7) = x(i-1,7) + (x(i,7)-x(i-1,7))*(final_height-x(i-1,5))/(x(i,5)-x(i-1,5));
+        x(i,5) = final_height;  %final y value reset to fgh
+    end
+  end
+end
+end
