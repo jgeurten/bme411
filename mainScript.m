@@ -104,20 +104,46 @@ optimalVel = optimalLaunchConds(1);
 optimalAngle = optimalLaunchConds(2); 
 optimalSpin = optimalLaunchConds(3); 
 
-vels = []; 
+angles = [round(optimalAngle)-5:2: round(optimalAngle)+5]; 
+spins = [round(optimalSpin)-2:round(optimalSpin)+3]; 
 
 figure, hold on
-for i = 1:length(backspins)
+for i = 1:length(angles)
     
-    [~, height] = calcVelocity(optimalLaunchConds(2)); 
-    launchConds = [optimalLaunchConds, height]; 
+    [vel, height] = calcVelocity(angles(i)); 
+    launchConds = [vel, angles(i), spins(i), height]; 
     [x, final,t] = simBallTrajectory(launchConds);     
-    dispName = [num2str(backspins(i)), ' rad/s']; 
+    dispName = [num2str(angles(i)), ' deg, ',num2str(spins(i)), ' rad/s' ]; 
     plot(x(1:final,3),x(1:final,4), 'LineWidth', 3,'DisplayName', dispName );
     legend('-DynamicLegend');
 end
 
 
+%% Plot distance as a function of angle, backspin
+
+
+angles = 0:60; 
+spins = 0:10*pi; 
+%distances = zeros(length(angles)*length(spins),1); 
+count = 1; 
+
+
+figure, hold on
+for i = 1:length(angles)
+    for j = 1:length(spins)
+        distance = optimizeLaunchConds([-1 , angles(i), spins(j)]); 
+         %count = count + 1;  
+         scatter3(angles(i), spins(j), distance);
+         xlabel('Angle (deg)'); 
+         ylabel('Spin (rad/s)'); 
+         zlabel('Distance (m)'); 
+    end
+end
+
+
+
+
+stop
 
 hold off
 legend('show')
