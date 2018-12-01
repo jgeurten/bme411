@@ -12,9 +12,9 @@ close all;
 setGlobalVars(); 
 
 angles = 0:10:60;  %deg
-backspins = 0:5:20; %rad/s
+backspins = 0:5:30; %rad/s
 
-%PLot distances as a function of angle
+%lLot distances as a function of angle
 figure, hold on 
 for i = 1:length(angles)
     launch_params = [20, angles(i), 10, 2];
@@ -28,8 +28,8 @@ hold off
 legend('show')
 xlabel('Ball Distance [m]'); 
 ylabel('Ball Height [m]'); 
-zlabel('Z [m]'); 
-title('Ball Trajectory')
+title('Ball Trajectory vs Launch Angle')
+saveas(gcf, 'Trajectory_vs_Angle.png'); 
 
 figure, hold on
 for i = 1:length(backspins)
@@ -44,8 +44,8 @@ hold off
 legend('show')
 xlabel('Ball Distance [m]'); 
 ylabel('Ball Height [m]'); 
-zlabel('Z [m]'); 
-title('Ball Trajectory')
+title('Ball Trajectory vs Launch Spn')
+saveas(gcf, 'Trajectory_vs_Spin.png'); 
 
 %% Optimization part of the code
 
@@ -57,8 +57,28 @@ options = optimoptions('fmincon','Display','iter');
 nonlcon = @unitdisk; 
 [optimalLaunchConds, distance] = fmincon(@optimizeLaunchConds, initConds,[],[],[],[],lBounds, uBounds, [], options)
 
-figure, 
-[~, height] = calcVelocity(optimalLaunchConds(2)); 
-launchConds = [optimalLaunchConds, height]; 
-[x, final,t] = simBallTrajectory(launchConds); 
-plot(x(1:final,3),x(1:final,4), 'LineWidth', 3);
+optimalVel = optimalLaunchConds(1); 
+optimalAngle = optimalLaunchConds(2); 
+optimalSpin = optimalLaunchConds(3); 
+
+vels = []; 
+
+figure, hold on
+for i = 1:length(backspins)
+    
+    [~, height] = calcVelocity(optimalLaunchConds(2)); 
+    launchConds = [optimalLaunchConds, height]; 
+    [x, final,t] = simBallTrajectory(launchConds);     
+    dispName = [num2str(backspins(i)), ' rad/s']; 
+    plot(x(1:final,3),x(1:final,4), 'LineWidth', 3,'DisplayName', dispName );
+    legend('-DynamicLegend');
+end
+
+
+
+hold off
+legend('show')
+xlabel('Ball Distance [m]'); 
+ylabel('Ball Height [m]'); 
+zlabel('Z [m]'); 
+title('Ball Trajectory')
