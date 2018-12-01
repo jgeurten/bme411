@@ -13,6 +13,7 @@ setGlobalVars();
 
 angles = 0:10:60;  %deg
 backspins = 0:5:30; %rad/s
+speeds = 0:4:20; 
 
 %lLot distances as a function of angle
 figure, hold on 
@@ -46,6 +47,23 @@ xlabel('Ball Distance [m]');
 ylabel('Ball Height [m]'); 
 title('Ball Trajectory vs Launch Spn')
 saveas(gcf, 'Trajectory_vs_Spin.png'); 
+
+
+figure, hold on
+for i = 1:length(speeds)
+    launch_params = [speeds(i), 20, 10, 2];
+    [x, final,t] = simBallTrajectory(launch_params); 
+    dispName = [num2str(speeds(i)), ' m/s']; 
+    plot(x(1:final,3),x(1:final,4), 'LineWidth', 3,'DisplayName', dispName );
+%     plot(t(1:final), x(1:final, 4), 'LineWidth', 3,'DisplayName', dispName); 
+    legend('-DynamicLegend');
+end
+hold off
+legend('show')
+xlabel('Ball Distance [m]'); 
+ylabel('Ball Height [m]'); 
+title('Ball Trajectory vs Launch Speed')
+saveas(gcf, 'Trajectory_vs_velocity.png'); 
 
 %%
 
