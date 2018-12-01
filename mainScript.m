@@ -47,6 +47,31 @@ ylabel('Ball Height [m]');
 title('Ball Trajectory vs Launch Spn')
 saveas(gcf, 'Trajectory_vs_Spin.png'); 
 
+%%
+
+heights = []; 
+vels = []; 
+angles = 0:60; 
+
+for i = 1:length(angles)
+    [vel, height] = calcVelocity(angles(i)); 
+    heights = [heights, height]; 
+    vels = [vels; vel]; 
+end
+
+
+figure, scatter(angles, heights); 
+xlabel('Angle (deg)'); 
+ylabel('Launch Height (m)'); 
+title('Launch Height versus Launch Angle'); 
+saveas(gcf, 'height_vs_angle.png')
+
+figure, scatter(angles, vels); 
+xlabel('Angle (deg)'); 
+ylabel('Launch Speed (m/s)'); 
+title('Launch Speed versus Launch Angle'); 
+saveas(gcf, 'speed_vs_angle.png')
+
 %% Optimization part of the code
 
 %[ vel (m/s), angle (deg), backspin (rad/s)];     
