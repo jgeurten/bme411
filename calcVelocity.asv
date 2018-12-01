@@ -1,0 +1,8 @@
+function [velocity, height] = calcVelocity(theta)
+
+global PATH_L MASS F_O DECAY H_SH
+
+
+velocity = sqrt(2*(F_O - DECAY*theta)*PATH_L/MASS); 
+height = H_SH + L_ARM*sin(theta + A_
+end

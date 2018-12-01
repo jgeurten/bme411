@@ -52,13 +52,13 @@ title('Ball Trajectory')
 %[ vel (m/s), angle (deg), backspin (rad/s)];     
 lBounds = [0, 0, 0]; 
 uBounds = [20, 60, 10*pi];
-initConds = [10, 35, 5]; 
+initConds = [5, 35, 1]; 
 options = optimoptions('fmincon','Display','iter'); 
 nonlcon = @unitdisk; 
 [optimalLaunchConds, distance] = fmincon(@optimizeLaunchConds, initConds,[],[],[],[],lBounds, uBounds, [], options)
 
 figure, 
 [~, height] = calcVelocity(optimalLaunchConds(2)); 
-launchConds = [optimalLaunchConds, height]; 
-[x, final,t] = simBallTrajectory(launchConds); 
+launchConds = [optimalLaunchConds
+[x, final,t] = simBallTrajectory(optimalLaunchConds, height); 
 plot(x(1:final,3),x(1:final,4), 'LineWidth', 3);
